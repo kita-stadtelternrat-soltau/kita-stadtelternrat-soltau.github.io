@@ -600,6 +600,75 @@ p, ul, ol, figure { margin: 0; }
 .hilfe-deko { position: absolute; left: -40px; bottom: -60px; display: flex; gap: 12px; align-items: flex-end; opacity: .1; rotate: 12deg; pointer-events: none; }
 .hilfe-deko i { display: block; width: 40px; border-radius: 99px; background: var(--c); }
 
+/* ── Kitas: an wen wende ich mich? ──────────────────────────── */
+.weg { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.weg li {
+  display: flex; gap: 18px; align-items: flex-start; padding: 24px 26px;
+  border-radius: 24px; background: var(--karte); box-shadow: var(--schatten);
+}
+.weg b {
+  flex: none; width: 48px; height: 48px; border-radius: 16px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; font: 800 1.4rem/1 var(--anzeige);
+}
+.weg h3 { font-size: 1.25rem; letter-spacing: -.02em; line-height: 1.15; }
+.weg p { color: var(--leise); margin-top: 6px; font-size: .98rem; line-height: 1.5; }
+.weg a, .kita-leer a, .kita-quelle a { color: var(--tinte); font-weight: 650; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--gelb); }
+/* Die Suche braucht das Skript; ohne Skript bleibt die ganze Liste zum Aufklappen */
+.kita-suche { display: none; margin-top: 56px; }
+.js .kita-suche { display: block; }
+.kita-suche label {
+  display: block; margin-bottom: 14px;
+  font: 700 .82rem/1 var(--anzeige); letter-spacing: .2em; text-transform: uppercase; color: var(--leise);
+}
+.suchfeld { position: relative; max-width: 620px; }
+.suchfeld svg { position: absolute; left: 22px; top: 50%; width: 22px; height: 22px; translate: 0 -50%; color: var(--leise); pointer-events: none; }
+.suchfeld input {
+  width: 100%; padding: 18px 110px 18px 58px; border-radius: 999px;
+  border: 2px solid var(--linie); background: var(--karte); color: var(--tinte);
+  font: 600 1.1rem/1.2 var(--text); -webkit-appearance: none; appearance: none;
+  transition: border-color .25s, box-shadow .25s;
+}
+.suchfeld input::placeholder { color: var(--leise); font-weight: 500; }
+.suchfeld input:focus { outline: none; border-color: var(--gelb); box-shadow: 0 0 0 6px color-mix(in srgb, var(--gelb) 28%, transparent); }
+.kita-treffer { position: absolute; right: 24px; top: 50%; translate: 0 -50%; font-weight: 700; font-size: .9rem; color: var(--leise); }
+.kita-liste {
+  list-style: none; margin: 28px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start;
+}
+.kita-liste li[hidden] { display: none; }
+/* Was die Suche wieder zeigt, rutscht kurz herein */
+.kita-liste li { animation: kita-rein .45s var(--weich); }
+@keyframes kita-rein { from { opacity: 0; translate: 0 12px; } }
+.kita {
+  border-radius: 22px; background: var(--karte); border: 1px solid var(--linie);
+  transition: border-color .3s, box-shadow .3s;
+}
+.kita[open] { border-color: color-mix(in srgb, var(--c) 50%, var(--linie)); box-shadow: var(--schatten); }
+.kita summary { list-style: none; cursor: pointer; display: flex; gap: 16px; align-items: center; padding: 16px 18px; }
+.kita summary::-webkit-details-marker { display: none; }
+.kita-zeichen {
+  flex: none; width: 46px; height: 46px; border-radius: 15px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; transition: transform .5s var(--feder), border-radius .4s var(--weich);
+}
+.kita-zeichen svg { width: 22px; height: 22px; }
+.kita summary:hover .kita-zeichen, .kita[open] .kita-zeichen { transform: rotate(-8deg); border-radius: 50%; }
+.kita-name { flex: 1; min-width: 0; }
+.kita-name b { display: block; font-weight: 700; font-size: 1.05rem; line-height: 1.25; }
+.kita-name small { display: block; margin-top: 2px; font-size: .9rem; line-height: 1.35; color: var(--leise); }
+.kita-pfeil { flex: none; width: 20px; height: 20px; color: var(--leise); transition: rotate .4s var(--weich); }
+.kita[open] .kita-pfeil { rotate: 180deg; }
+.kita-kontakt { display: grid; gap: 8px; padding: 0 18px 18px 80px; }
+.kita-kontakt a {
+  display: flex; gap: 12px; align-items: center; min-width: 0; padding: 11px 14px; border-radius: 14px;
+  background: var(--sanft); font-weight: 650; text-decoration: none; overflow-wrap: anywhere;
+  transition: background-color .25s, translate .3s var(--weich);
+}
+.kita-kontakt a:hover { background: color-mix(in srgb, var(--c) 22%, var(--sanft)); translate: 4px 0; }
+.kita-kontakt svg { flex: none; width: 18px; height: 18px; }
+.kita-kontakt .kita-mehr { background: none; padding-block: 6px; font-weight: 600; color: var(--leise); }
+.kita-leer { margin-top: 22px; color: var(--leise); }
+.kita-quelle { margin-top: 28px; max-width: 70ch; font-size: .92rem; color: var(--leise); }
+
 /* ── Vorstand ───────────────────────────────────────────────── */
 .vorstand-raster { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; margin-top: 56px; }
 .person {
@@ -620,12 +689,6 @@ p, ul, ol, figure { margin: 0; }
   animation: wackeln 2.6s ease-in-out infinite;
 }
 @keyframes wackeln { 0%, 70%, 100% { rotate: 0deg; } 76% { rotate: -8deg; } 84% { rotate: 7deg; } 92% { rotate: -3deg; } }
-.vertretung-hinweis {
-  margin-top: 28px; padding: 24px 28px; border-radius: 24px; background: var(--sanft);
-  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
-}
-.vertretung-hinweis p { color: var(--leise); flex: 1 1 30ch; min-width: 0; }
-.vertretung-hinweis b { color: var(--tinte); }
 
 /* ── Kontakt ────────────────────────────────────────────────── */
 .kontakt { background: var(--sanft); }
@@ -758,6 +821,8 @@ p, ul, ol, figure { margin: 0; }
   .eintrag-kachel { width: 54px; height: 54px; border-radius: 18px; }
   .eintrag-kachel svg { width: 26px; height: 26px; }
   .eintrag-pfeil { display: none; }
+  .kita-kontakt { padding-left: 18px; }
+  .suchfeld input { padding-right: 84px; }
 }
 
 .recht { padding-bottom: 100px; }
@@ -777,6 +842,7 @@ p, ul, ol, figure { margin: 0; }
 @media (max-width: 900px) {
   .drei, .zahlen-raster, .beitraege, .kontakt-raster { grid-template-columns: 1fr; }
   .einsatz-raster, .partner-raster, .hilfe-raster { grid-template-columns: 1fr; }
+  .weg, .kita-liste { grid-template-columns: 1fr; }
   .kleben { position: static; }
   .treppe { grid-template-columns: 1fr; }
   .stufe, .stufe:nth-child(n) { min-height: 0; }

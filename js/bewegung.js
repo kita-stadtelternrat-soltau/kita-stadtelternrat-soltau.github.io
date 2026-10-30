@@ -159,6 +159,33 @@
     auswahl.addRange(bereich);
   }
 
+  // ── Kita-Suche: die Liste filtert sich beim Tippen ──
+  var kitaFeld = document.getElementById('kita-feld');
+  if (kitaFeld) {
+    var kitas = [].slice.call(document.querySelectorAll('.kita'));
+    var kitaLeer = document.querySelector('.kita-leer');
+    var kitaTreffer = document.querySelector('.kita-treffer');
+    // „Bärenstark“ findet man auch mit „baerenstark“, Satzzeichen zählen nicht
+    var einfach = function (s) {
+      return s.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+        .replace(/[^a-z0-9@]+/g, ' ').trim();
+    };
+    kitas.forEach(function (k) { k.suchtext = einfach(k.getAttribute('data-suche') + ' ' + k.textContent); });
+    kitaFeld.addEventListener('input', function () {
+      var woerter = einfach(kitaFeld.value).split(' ').filter(Boolean);
+      var gefunden = kitas.filter(function (k) {
+        var passt = woerter.every(function (w) { return k.suchtext.indexOf(w) !== -1; });
+        k.parentNode.hidden = !passt;
+        if (!woerter.length) k.open = false;
+        return passt;
+      });
+      // Bleibt genau eine Kita übrig, gleich mit Telefon und E-Mail zeigen
+      if (woerter.length && gefunden.length === 1) gefunden[0].open = true;
+      kitaLeer.hidden = gefunden.length > 0;
+      kitaTreffer.textContent = woerter.length ? gefunden.length + (gefunden.length === 1 ? ' Kita' : ' Kitas') : '';
+    });
+  }
+
   // ── Im Menü steht unterstrichen, wo man gerade ist ──
   var links = {};
   document.querySelectorAll('.navi a[href^="#"]').forEach(function (a) {
