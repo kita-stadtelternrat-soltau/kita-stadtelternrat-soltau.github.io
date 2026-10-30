@@ -22,6 +22,7 @@
   --orange: #E8863A;
   --gelb: #EFC23C;
   --gruen: #6DA63A;
+  --tuerkis: #40AC9F;        /* die siebte Farbe, zwischen Grün und Hellblau, für die Kitas */
   --hellblau: #62B2D4;
   --blau: #3A7CB4;
 
@@ -613,7 +614,7 @@ p, ul, ol, figure { margin: 0; }
 }
 .weg h3 { font-size: 1.25rem; letter-spacing: -.02em; line-height: 1.15; }
 .weg p { color: var(--leise); margin-top: 6px; font-size: .98rem; line-height: 1.5; }
-.weg a, .kita-leer a, .kita-quelle a { color: var(--tinte); font-weight: 650; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--gelb); }
+.weg a, .kita-leer a, .kita-quelle a { color: var(--tinte); font-weight: 650; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--tuerkis); }
 /* Die Suche braucht das Skript; ohne Skript bleibt die ganze Liste zum Aufklappen */
 .kita-suche { display: none; margin-top: 56px; }
 .js .kita-suche { display: block; }
@@ -630,7 +631,7 @@ p, ul, ol, figure { margin: 0; }
   transition: border-color .25s, box-shadow .25s;
 }
 .suchfeld input::placeholder { color: var(--leise); font-weight: 500; }
-.suchfeld input:focus { outline: none; border-color: var(--gelb); box-shadow: 0 0 0 6px color-mix(in srgb, var(--gelb) 28%, transparent); }
+.suchfeld input:focus { outline: none; border-color: var(--tuerkis); box-shadow: 0 0 0 6px color-mix(in srgb, var(--tuerkis) 28%, transparent); }
 .kita-treffer { position: absolute; right: 24px; top: 50%; translate: 0 -50%; font-weight: 700; font-size: .9rem; color: var(--leise); }
 .kita-liste {
   list-style: none; margin: 28px 0 0; padding: 0;
