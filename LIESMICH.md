@@ -132,3 +132,7 @@ passende Stelle weiter. Die Liste steht oben in `404.html`.
   GitHub schreibt, auch vom Handy.
 - **Termine** stehen fest in `index.html` (Abschnitt `termine`). Der Zähler
   „Tage noch“ rechnet selbst und verschwindet, wenn der Termin vorbei ist.
+- **Kita-Liste** (Abschnitt `kitas`): Telefon und E-Mail so, wie die Stadt sie
+  auf soltau.de zeigt. Ändert sich etwas, in `bau/webseite-probe/kitas.py`
+  eintragen und `python kitas.py` laufen lassen. Bei der Luther-Kita nennt die
+  Stadt dieselbe E-Mail-Adresse wie bei St. Johannis.
