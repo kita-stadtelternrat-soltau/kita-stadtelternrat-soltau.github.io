@@ -1,0 +1,804 @@
+/* Kita-Stadtelternrat Soltau
+   Farben aus dem Logo gemessen, wie auf Einladung, Folien und Instagram.
+   Jeder Bereich bekommt eine der sechs Farben, die Wachsmalstifte sind das Erkennungszeichen. */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("../schriften/bricolage-grotesque.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("../schriften/plus-jakarta-sans.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@view-transition { navigation: auto; }
+
+:root {
+  --rot: #D9483F;
+  --orange: #E8863A;
+  --gelb: #EFC23C;
+  --gruen: #6DA63A;
+  --hellblau: #62B2D4;
+  --blau: #3A7CB4;
+
+  --tinte: #241F2E;
+  --leise: #6B6478;
+  --papier: #FFFCF6;
+  --sanft: #F6F1E7;
+  --karte: #FFFFFF;
+  --linie: #E8E1D4;
+  --nacht: #241F2E;          /* die dunklen Bereiche wie Zahlen und Hilfe */
+  --nacht-text: #F5F1FA;
+  --nacht-leise: #ADA4BD;
+  --auf-farbe: #241F2E;      /* Schrift auf den Farbfeldern: Weiß auf Gelb wäre unlesbar */
+
+  --schatten: 0 2px 4px rgba(36, 31, 46, .04), 0 22px 50px -18px rgba(36, 31, 46, .22);
+  --rund: 28px;
+  --rand: clamp(16px, 4.5vw, 48px);
+  --breite: 1220px;
+
+  --anzeige: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --text: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --weich: cubic-bezier(.22, 1, .36, 1);
+  --feder: cubic-bezier(.34, 1.56, .64, 1);
+  color-scheme: only light;   /* immer hell, auch wenn das Handy dunkel eingestellt ist */
+}
+
+
+/* ── Grundlagen ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 90px; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--tinte);
+  font: 400 1.0625rem/1.65 var(--text);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+h1, h2, h3 {
+  font-family: var(--anzeige);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.035em;
+  margin: 0;
+  text-wrap: balance;
+}
+p, ul, ol, figure { margin: 0; }
+:focus-visible { outline: 3px solid var(--blau); outline-offset: 3px; border-radius: 8px; }
+::selection { background: var(--gelb); color: var(--auf-farbe); }
+
+.huelle { width: min(var(--breite), 100% - 2 * var(--rand)); margin-inline: auto; }
+.nur-vorleser {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+.springen {
+  position: absolute; left: 16px; top: -60px; z-index: 100;
+  background: var(--tinte); color: var(--papier); padding: 10px 16px; border-radius: 12px;
+  font-weight: 700; text-decoration: none; transition: top .2s;
+}
+.springen:focus { top: 16px; }
+
+/* Die sechs Farben als Streifen, wie oben auf jedem Druckstück */
+.bogen {
+  height: 6px;
+  background: linear-gradient(90deg,
+    var(--rot) 0 16.66%, var(--orange) 0 33.33%, var(--gelb) 0 50%,
+    var(--gruen) 0 66.66%, var(--hellblau) 0 83.33%, var(--blau) 0);
+}
+
+/* ── Kopf ───────────────────────────────────────────────────── */
+.kopf {
+  position: sticky; top: 0; z-index: 50;
+  transition: box-shadow .4s var(--weich);
+}
+/* Milchglas auf eigener Ebene: direkt auf .kopf würde es das Handy-Menü in die Kopfzeile sperren */
+.kopf::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: color-mix(in srgb, var(--papier) 84%, transparent);
+  -webkit-backdrop-filter: saturate(1.5) blur(16px);
+  backdrop-filter: saturate(1.5) blur(16px);
+}
+.kopf.gescrollt { box-shadow: 0 1px 0 var(--linie), 0 14px 34px -24px rgba(36, 31, 46, .45); }
+.kopf .bogen { opacity: .22; }
+/* Beim Scrollen malt sich der blasse Streifen von links kräftig aus, jede Farbe an ihrer Stelle */
+.kopf .fortschritt {
+  position: absolute; left: 0; top: 0; width: 100%; height: 6px; opacity: 1;
+  clip-path: inset(0 calc(100% - var(--fortschritt, 0) * 100%) 0 0);
+}
+.kopf-innen {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  height: 78px; transition: height .4s var(--weich);
+}
+.kopf.gescrollt .kopf-innen { height: 64px; }
+.marke { display: flex; align-items: center; flex: none; border-radius: 14px; }
+.marke img { height: 46px; width: auto; transition: height .4s var(--weich); }
+.kopf.gescrollt .marke img { height: 40px; }
+
+.navi { display: flex; align-items: center; gap: 2px; }
+.navi a {
+  --c: var(--blau);
+  position: relative; padding: 9px 14px; border-radius: 999px;
+  font-weight: 650; font-size: .95rem; text-decoration: none; white-space: nowrap;
+  transition: background-color .25s, color .25s;
+}
+.navi a::after {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: 5px; height: 3px; border-radius: 3px;
+  background: var(--c); transform: scaleX(0); transform-origin: 0 50%; transition: transform .35s var(--weich);
+}
+.navi a:hover::after, .navi a[aria-current]::after { transform: scaleX(1); }
+.navi a.knopf-klein {
+  background: var(--tinte); color: var(--papier); margin-left: 8px; padding-inline: 18px;
+}
+.navi a.knopf-klein::after { display: none; }
+.navi a.knopf-klein:hover { background: var(--rot); color: #fff; }
+
+.menue-knopf {
+  display: none; position: relative; z-index: 70;
+  width: 50px; height: 50px; border: 0; border-radius: 16px;
+  background: var(--tinte); color: var(--papier); cursor: pointer;
+}
+.menue-knopf span {
+  position: absolute; left: 14px; right: 14px; height: 3px; border-radius: 3px; background: currentColor;
+  transition: transform .4s var(--feder), opacity .2s;
+}
+.menue-knopf span:nth-child(1) { top: 17px; }
+.menue-knopf span:nth-child(2) { top: 24px; }
+.menue-knopf span:nth-child(3) { top: 31px; }
+.menue-offen .menue-knopf span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menue-offen .menue-knopf span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.menue-offen .menue-knopf span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 980px) {
+  .menue-knopf { display: block; }
+  .navi {
+    position: fixed; inset: 0; z-index: 60;
+    flex-direction: column; align-items: stretch; justify-content: center; gap: 6px;
+    padding: calc(90px + env(safe-area-inset-top, 0px)) var(--rand) calc(40px + env(safe-area-inset-bottom, 0px));
+    background: var(--papier);
+    clip-path: circle(0 at calc(100% - 45px) 40px);
+    transition: clip-path .7s var(--weich);
+    visibility: hidden;
+  }
+  .menue-offen .navi { clip-path: circle(150% at calc(100% - 45px) 40px); visibility: visible; }
+  .navi a {
+    font-family: var(--anzeige); font-size: clamp(2rem, 9vw, 3rem); font-weight: 800;
+    letter-spacing: -.03em; padding: 6px 0 6px 64px; border-radius: 0;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity .5s var(--weich), transform .6s var(--weich);
+  }
+  .navi a::before {
+    content: ""; position: absolute; left: 0; top: 50%; width: 42px; height: 42px; margin-top: -21px;
+    border-radius: 13px; background: var(--c);
+  }
+  .navi a::after { display: none; }
+  .navi a.knopf-klein { background: none; color: inherit; margin: 0; padding-left: 64px; }
+  .menue-offen .navi a { opacity: 1; transform: none; }
+  .menue-offen .navi a:nth-child(1) { transition-delay: .15s; }
+  .menue-offen .navi a:nth-child(2) { transition-delay: .2s; }
+  .menue-offen .navi a:nth-child(3) { transition-delay: .25s; }
+  .menue-offen .navi a:nth-child(4) { transition-delay: .3s; }
+  .menue-offen .navi a:nth-child(5) { transition-delay: .35s; }
+  .menue-offen .navi a:nth-child(6) { transition-delay: .4s; }
+  .menue-offen { overflow: hidden; }
+}
+
+/* ── Knöpfe ─────────────────────────────────────────────────── */
+.knoepfe { display: flex; flex-wrap: wrap; gap: 12px; }
+.knopf {
+  --c: var(--tinte);
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 24px; border-radius: 999px;
+  border: 2px solid var(--tinte); background: transparent; color: var(--tinte);
+  font: 700 1rem/1 var(--text); text-decoration: none; cursor: pointer;
+  transition: transform .4s var(--feder), background-color .25s, color .25s, border-color .25s;
+  will-change: transform;
+}
+.knopf svg { width: 18px; height: 18px; transition: transform .35s var(--feder); }
+.knopf:hover svg { transform: translateX(4px); }
+.knopf:hover { border-color: var(--c); }
+.knopf-voll { background: var(--tinte); color: var(--papier); }
+.knopf-voll:hover { background: var(--rot); border-color: var(--rot); color: #fff; }
+.knopf-hell { border-color: var(--nacht-text); color: var(--nacht-text); }
+.knopf-hell.knopf-voll { background: var(--nacht-text); color: var(--nacht); }
+.knopf-hell.knopf-voll:hover { background: var(--gelb); border-color: var(--gelb); color: var(--auf-farbe); }
+.knopf-hell:not(.knopf-voll):hover { border-color: var(--gelb); color: var(--gelb); }
+
+/* ── Bereiche ───────────────────────────────────────────────── */
+.bereich { padding-block: clamp(80px, 12vw, 150px); position: relative; }
+.dachzeile {
+  display: inline-flex; align-items: center; gap: 12px;
+  font: 700 .82rem/1 var(--anzeige); letter-spacing: .2em; text-transform: uppercase; color: var(--leise);
+}
+.dachzeile i {
+  display: block; width: 26px; height: 26px; border-radius: 8px; background: var(--c, var(--rot)); flex: none;
+}
+.titel-gross { font-size: clamp(2.6rem, 6.4vw, 5.2rem); margin-top: 18px; }
+.titel-mittel { font-size: clamp(2rem, 4.4vw, 3.4rem); margin-top: 16px; }
+.einleitung { font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.6; color: var(--leise); max-width: 60ch; margin-top: 24px; }
+.einleitung b, .einleitung strong { color: var(--tinte); font-weight: 650; }
+.farbe-rot { color: var(--rot); }
+
+/* ── Startbild ──────────────────────────────────────────────── */
+.held { padding-block: clamp(40px, 7vw, 100px) clamp(60px, 8vw, 110px); position: relative; }
+.held-raster {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .9fr);
+  gap: clamp(24px, 5vw, 80px); align-items: end;
+}
+.held-titel { font-size: clamp(2.9rem, 8.2vw, 7.4rem); line-height: .93; letter-spacing: -.045em; margin-top: 22px; }
+.wort { display: inline-block; overflow: clip; overflow-clip-margin: .12em; vertical-align: top; padding-bottom: .06em; }
+.wort > span {
+  display: inline-block; transform: translateY(105%);
+  animation: wort-auf 1s var(--weich) calc(.1s + var(--i, 0) * .07s) forwards;
+}
+@keyframes wort-auf { to { transform: none; } }
+.stimme { position: relative; display: inline-block; color: var(--rot); white-space: nowrap; }
+.kritzel {
+  position: absolute; left: -2%; bottom: -.16em; width: 104%; height: .32em; overflow: visible;
+  pointer-events: none;
+}
+.kritzel path {
+  fill: none; stroke: var(--rot); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 700; stroke-dashoffset: 700; opacity: .9;
+  animation: kritzeln 1.1s var(--weich) 1.05s forwards;
+}
+@keyframes kritzeln { to { stroke-dashoffset: 0; } }
+.held-unter {
+  font-size: clamp(1.1rem, 1.7vw, 1.35rem); line-height: 1.55; color: var(--leise);
+  max-width: 34ch; margin-top: 28px;
+}
+.held .knoepfe { margin-top: 34px; }
+.einblenden { opacity: 0; transform: translateY(18px); animation: einblenden .9s var(--weich) var(--d, .6s) forwards; }
+@keyframes einblenden { to { opacity: 1; transform: none; } }
+
+.held-bild {
+  position: relative; height: clamp(300px, 40vw, 500px);
+  display: flex; align-items: flex-end; justify-content: center;
+  --mx: 0; --my: 0;
+}
+.stifte {
+  display: flex; align-items: flex-end; justify-content: flex-end; gap: clamp(8px, 1.4vw, 18px);
+  flex: 1; min-width: 0; height: 100%; padding-bottom: 6px;
+  transform: translate(calc(var(--mx) * -10px), calc(var(--my) * -6px));
+  transition: transform .8s var(--weich);
+  /* unten abgeschnitten: die Stifte schieben sich von unten ins Bild */
+  clip-path: inset(-140px -60px -8px -60px);
+}
+/* Wachsmalstifte wie die, mit denen das Logo gemalt ist: Spitze, Wachs, Papier mit Wellenlinien */
+.stift {
+  --h: 300;
+  --kragen: 14px;   /* freies Wachs unter der Spitze */
+  --ende: 7px;      /* freies Wachs am unteren Ende */
+  --licht: linear-gradient(90deg, rgba(36, 31, 46, .08), rgba(255, 255, 255, .45) 17%, rgba(255, 255, 255, 0) 40%,
+                           rgba(36, 31, 46, 0) 60%, rgba(36, 31, 46, .28));
+  --welle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12' preserveAspectRatio='none'%3E%3Cpath d='M0 3.5Q5 .5 10 3.5T20 3.5M0 8.5Q5 5.5 10 8.5T20 8.5' fill='none' stroke='rgba(36,31,46,.5)' stroke-width='1.6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  display: flex; flex-direction: column; flex: 0 1 58px; min-width: 18px;
+  height: calc(var(--h) / 330 * 100%);
+  filter: drop-shadow(4px 5px 5px rgba(36, 31, 46, .16));
+  transform-origin: 50% 100%;
+  transform: translateY(115%);
+  animation:
+    stift-auf 1.2s var(--feder) calc(.3s + var(--i) * .09s) forwards,
+    stift-wippen 4.8s ease-in-out calc(1.6s + var(--i) * -.8s) infinite alternate;
+  rotate: calc(var(--mx) * (var(--i) - 2.5) * 1.6deg);
+  transition: rotate .8s var(--weich);
+}
+/* die Spitze, schon ein bisschen abgemalt */
+.stift::before {
+  content: ""; flex: none; aspect-ratio: 1 / 1.05; margin-bottom: -1px;
+  background: radial-gradient(ellipse 22% 9% at 51% 7%, rgba(255, 255, 255, .5), transparent), var(--licht), var(--c);
+  --spitze: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 105' preserveAspectRatio='none'%3E%3Cpath d='M0 105V99C0 95 1.5 91 3.5 87L33 16C35.5 10 39 7.5 45 6.5L56 4.5C62 3.5 65.5 6 67.5 11L96.5 87C98.5 91 100 95 100 99V105Z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--spitze) 0 0 / 100% 100% no-repeat;
+  mask: var(--spitze) 0 0 / 100% 100% no-repeat;
+}
+/* der Stift im Papier */
+.stift::after {
+  --papier-hoehe: calc(100% - var(--kragen) - var(--ende));
+  content: ""; flex: 1; min-height: 0; border-radius: 0 0 7px 7px;
+  background:
+    var(--licht),
+    var(--welle) 0 calc(var(--kragen) + 8px) / var(--wellen, 50%) 12px repeat-x,
+    var(--welle) 0 calc(100% - var(--ende) - 8px) / var(--wellen, 50%) 12px repeat-x,
+    linear-gradient(rgba(36, 31, 46, .45) 0 2px, transparent 2px calc(100% - 2px), rgba(36, 31, 46, .45) 0)
+      0 var(--kragen) / 100% var(--papier-hoehe) no-repeat,
+    linear-gradient(color-mix(in oklab, var(--c) 88%, #241F2E) 0 0) 0 var(--kragen) / 100% var(--papier-hoehe) no-repeat,
+    var(--c);
+}
+@keyframes stift-auf { to { transform: none; } }
+@keyframes stift-wippen { from { translate: 0 0; } to { translate: 0 -14px; } }
+.held-bild { padding-left: clamp(90px, 13vw, 170px); }
+.kinder {
+  position: absolute; left: 0; bottom: 0; width: clamp(100px, 13vw, 170px);
+  transform-origin: 50% 100%;
+  opacity: 0; animation: einblenden .8s var(--weich) 1.2s forwards, winken 3.2s ease-in-out 2.2s infinite;
+  translate: calc(var(--mx) * 14px) 0;
+  transition: translate .8s var(--weich);
+}
+@keyframes winken { 0%, 100% { rotate: 0deg; } 50% { rotate: -3deg; } }
+.held-schatten {
+  position: absolute; left: 8%; right: 8%; bottom: -4px; height: 14px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(36, 31, 46, .18), transparent);
+}
+
+@media (max-width: 860px) {
+  .held-raster { grid-template-columns: 1fr; }
+  .held-bild { height: 215px; order: -1; margin-bottom: -12px; justify-content: flex-end; }
+  .stifte { height: 100%; gap: 10px; }
+  /* schmal wie echte Wachsmalstifte, sonst wirken sie auf dem Handy wie Klötze */
+  .stift { flex-basis: 22px; --kragen: 9px; --ende: 5px; --wellen: 100%; }
+  .kinder { left: 0; width: 130px; }
+}
+
+/* ── Laufband ───────────────────────────────────────────────── */
+.laufband {
+  background: var(--nacht); color: var(--nacht-text);
+  transform: rotate(-1.6deg); margin-inline: -20px; padding: 18px 0; overflow: hidden;
+  position: relative; z-index: 2;
+}
+.laufband-spur {
+  display: flex; width: max-content; gap: 34px; align-items: center;
+  animation: laufen 46s linear infinite;
+}
+.laufband:hover .laufband-spur { animation-play-state: paused; }
+.laufband span { font: 800 clamp(1.3rem, 2.6vw, 2rem)/1 var(--anzeige); letter-spacing: -.02em; white-space: nowrap; }
+.laufband b { display: block; width: 18px; height: 18px; border-radius: 6px; background: var(--c); flex: none; rotate: 12deg; }
+@keyframes laufen { to { transform: translateX(-50%); } }
+
+/* ── Erscheinen beim Scrollen ───────────────────────────────── */
+.js .zeigen { opacity: 0; transform: translateY(40px); transition: opacity .9s var(--weich), transform 1s var(--weich); transition-delay: calc(var(--n, 0) * 90ms); }
+.js .zeigen.da { opacity: 1; transform: none; }
+
+/* ── Wer wir sind ───────────────────────────────────────────── */
+.drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 56px; }
+.drei-karte {
+  position: relative; padding: 34px 30px 36px; border-radius: var(--rund);
+  background: var(--nacht); color: var(--nacht-text); overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform .5s var(--weich), box-shadow .5s var(--weich);
+}
+.drei-karte:hover { box-shadow: var(--schatten); }
+.drei-karte .symbol {
+  width: 64px; height: 64px; border-radius: 20px; background: var(--c);
+  display: grid; place-items: center; color: var(--auf-farbe);
+  transition: transform .6s var(--feder), border-radius .6s var(--weich);
+}
+.drei-karte:hover .symbol { transform: rotate(-10deg) scale(1.08); border-radius: 50%; }
+.symbol svg { width: 30px; height: 30px; }
+.drei-karte h3 { font-size: 2rem; margin-top: 30px; }
+.drei-karte p { color: var(--nacht-leise); margin-top: 12px; }
+.drei-karte::after {
+  content: ""; position: absolute; right: -40px; top: -40px; width: 140px; height: 140px; border-radius: 40px;
+  background: var(--c); opacity: .12; rotate: 20deg; transition: rotate 1s var(--weich), scale 1s var(--weich);
+}
+.drei-karte:hover::after { rotate: 60deg; scale: 1.3; }
+.motivation {
+  margin-top: 40px; font: 800 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 var(--anzeige); letter-spacing: -.02em; max-width: 30ch;
+}
+.motivation span { color: var(--leise); font-weight: 600; }
+
+/* ── Wofür wir uns einsetzen ────────────────────────────────── */
+.einsatz { background: var(--sanft); }
+.einsatz-raster { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 6vw, 90px); }
+.kleben { position: sticky; top: 130px; align-self: start; }
+.themen-liste { display: flex; flex-direction: column; gap: 18px; }
+.thema {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 26px; align-items: start;
+  padding: 34px; border-radius: var(--rund); background: var(--karte); box-shadow: var(--schatten);
+}
+.thema-nr {
+  width: 76px; height: 76px; border-radius: 24px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; font: 800 1.9rem/1 var(--anzeige);
+  transition: transform .9s var(--feder) .2s;
+}
+.js .thema .thema-nr { transform: rotate(-8deg) scale(.7); }
+.js .thema.da .thema-nr { transform: none; }
+.thema h3 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
+.thema p { color: var(--leise); margin-top: 10px; }
+
+/* ── Aufbau: die Treppe ─────────────────────────────────────── */
+.treppe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: end; margin-top: 64px; }
+.stufe {
+  --hoehe: 300px;
+  position: relative; min-height: var(--hoehe); padding: 30px; border-radius: var(--rund);
+  background: var(--karte); border: 2px solid var(--linie);
+  display: flex; flex-direction: column; justify-content: flex-start;
+  transform-origin: 50% 100%;
+  transition: transform 1.1s var(--feder), opacity .6s var(--weich);
+  transition-delay: calc(var(--n) * 160ms);
+}
+.js .stufe { transform: scaleY(.25); opacity: 0; }
+.js .stufe > * { opacity: 0; }
+.stufe > * { transition: opacity .6s var(--weich) calc(var(--n) * 160ms + .5s); }
+.js .treppe.da .stufe, .js .treppe.da .stufe > * { transform: none; opacity: 1; }
+.stufe:nth-child(1) { --hoehe: 280px; }
+.stufe:nth-child(2) { --hoehe: 350px; }
+.stufe:nth-child(3) { --hoehe: 420px; background: var(--nacht); color: var(--nacht-text); border-color: var(--nacht); }
+.stufe-kopf { display: flex; justify-content: space-between; align-items: center; }
+.stufe-kopf small { font: 700 .78rem/1 var(--anzeige); letter-spacing: .2em; color: var(--leise); }
+.stufe:nth-child(3) .stufe-kopf small, .stufe:nth-child(3) p { color: var(--nacht-leise); }
+.stufe-kopf b {
+  width: 54px; height: 54px; border-radius: 17px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; font: 800 1.5rem/1 var(--anzeige);
+}
+.stufe h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); margin-top: auto; padding-top: 40px; }
+.stufe p { color: var(--leise); margin-top: 10px; }
+.treppe-pfeil { color: var(--leise); margin-top: 26px; max-width: 62ch; }
+
+/* ── Partner: die Umlaufbahn ────────────────────────────────── */
+.partner-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: center; }
+.bahn { position: relative; width: min(100%, 540px); aspect-ratio: 1; margin-inline: auto; }
+.bahn-ring {
+  position: absolute; inset: 12%; border-radius: 50%;
+  border: 2px dashed var(--linie);
+  animation: drehen 80s linear infinite;
+}
+.bahn-ring.zwei { inset: 26%; border-style: dotted; animation-direction: reverse; animation-duration: 60s; }
+.bahn-dreher { position: absolute; inset: 0; animation: drehen 70s linear infinite; }
+.bahn:hover .bahn-dreher, .bahn:hover .bahn-ring, .bahn:hover .bahn-chip { animation-play-state: paused; }
+.bahn-linien { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.bahn-linien line { stroke: var(--linie); stroke-width: .5; stroke-dasharray: 100; transition: stroke-dashoffset 1.4s var(--weich); }
+.js .bahn-linien line { stroke-dashoffset: 100; }
+.js .bahn.da .bahn-linien line { stroke-dashoffset: 0; }
+.bahn-chip {
+  position: absolute; left: var(--x); top: var(--y);
+  translate: -50% -50%;
+  animation: drehen 70s linear infinite reverse;
+}
+.bahn-chip span {
+  display: block; padding: 12px 18px; border-radius: 999px; white-space: nowrap;
+  background: var(--karte); border: 2px solid var(--linie); box-shadow: var(--schatten);
+  font: 700 clamp(.82rem, 1.5vw, 1rem)/1 var(--text);
+  transition: scale .8s var(--feder) calc(.4s + var(--n) * .12s);
+}
+.js .bahn-chip span { scale: 0; }
+.js .bahn.da .bahn-chip span { scale: 1; }
+.bahn-chip.gross span { background: var(--rot); border-color: var(--rot); color: #fff; font-size: clamp(.95rem, 1.8vw, 1.15rem); padding: 15px 22px; }
+.bahn-chip.hervor span { background: var(--gruen); border-color: var(--gruen); color: var(--auf-farbe); }
+.bahn-mitte {
+  position: absolute; inset: 34%; border-radius: 50%; background: var(--nacht); color: var(--nacht-text);
+  display: grid; place-items: center; text-align: center; padding: 10px;
+  font: 800 clamp(.95rem, 1.9vw, 1.35rem)/1.05 var(--anzeige); letter-spacing: -.02em;
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--nacht) 12%, transparent), 0 0 0 22px color-mix(in srgb, var(--nacht) 6%, transparent);
+  animation: pochen 3.6s ease-in-out infinite;
+}
+@keyframes drehen { to { rotate: 360deg; } }
+@keyframes pochen { 50% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--nacht) 10%, transparent), 0 0 0 34px color-mix(in srgb, var(--nacht) 4%, transparent); } }
+.stimme-box {
+  margin-top: 30px; padding: 26px 28px; border-radius: 24px;
+  background: color-mix(in srgb, var(--gruen) 16%, var(--papier));
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start;
+}
+.stimme-box i { width: 46px; height: 46px; border-radius: 14px; background: var(--gruen); display: block; }
+.stimme-box b { font: 800 1.3rem/1.1 var(--anzeige); display: block; }
+.stimme-box p { color: var(--leise); margin-top: 6px; }
+
+/* ── Zahlen ─────────────────────────────────────────────────── */
+.zahlen { background: var(--nacht); color: var(--nacht-text); overflow: hidden; }
+.zahlen .dachzeile, .zahlen .einleitung { color: var(--nacht-leise); }
+.zahlen-raster { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 56px; }
+.zahl {
+  padding: 34px 30px; border-radius: var(--rund);
+  background: color-mix(in srgb, var(--nacht-text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nacht-text) 12%, transparent);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.zahl-wert {
+  font: 800 clamp(3.4rem, 7vw, 5.6rem)/.9 var(--anzeige); letter-spacing: -.05em;
+  font-variant-numeric: tabular-nums; color: var(--c);
+}
+.zahl-wert small { font-size: .45em; letter-spacing: -.02em; }
+.zahl p { color: var(--nacht-leise); }
+.zahl p b { color: var(--nacht-text); }
+.balken { height: 12px; border-radius: 99px; background: color-mix(in srgb, var(--nacht-text) 12%, transparent); overflow: hidden; margin-top: auto; }
+.balken i { display: block; height: 100%; width: var(--w); border-radius: 99px; background: var(--c); transform-origin: 0 50%; transition: transform 2s var(--weich) .3s; }
+.js .balken i { transform: scaleX(0); }
+.js .zahlen-raster.da .balken i { transform: none; }
+.zahlen .knoepfe { margin-top: 40px; }
+.zahlen-deko {
+  position: absolute; right: -60px; bottom: -80px; display: flex; gap: 14px; align-items: flex-end; opacity: .14; rotate: -14deg;
+  pointer-events: none;
+}
+.zahlen-deko i { display: block; width: 46px; border-radius: 99px; background: var(--c); }
+
+/* ── Neuigkeiten ────────────────────────────────────────────── */
+.kopf-zeile { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+.beitraege { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 56px; }
+.beitrag {
+  position: relative; display: flex; flex-direction: column;
+  border-radius: var(--rund); background: var(--karte); box-shadow: var(--schatten);
+  text-decoration: none; overflow: hidden;
+  transition: transform .5s var(--weich), box-shadow .5s var(--weich);
+}
+.beitrag:hover { transform: translateY(-8px) rotate(-.4deg); }
+.beitrag-bild {
+  position: relative; height: 200px; background: color-mix(in srgb, var(--c) 22%, var(--papier));
+  display: flex; align-items: flex-end; gap: 10px; padding: 0 26px; overflow: hidden;
+}
+.beitrag-bild i {
+  display: block; width: 30px; border-radius: 99px 99px 0 0; background: var(--c);
+  height: var(--h); transition: height .7s var(--feder);
+  transition-delay: calc(var(--i) * 50ms);
+}
+.beitrag:hover .beitrag-bild i { height: calc(var(--h) + 30px); }
+.beitrag-bild i:nth-child(2n) { opacity: .55; }
+.beitrag-kachel {
+  position: absolute; right: 24px; top: 24px; width: 72px; height: 72px; border-radius: 22px; background: var(--c);
+  display: grid; place-items: center; color: var(--auf-farbe);
+  transition: transform .6s var(--feder), border-radius .6s var(--weich);
+}
+.beitrag:hover .beitrag-kachel { transform: rotate(12deg) scale(1.1); border-radius: 50%; }
+.beitrag-kachel svg { width: 32px; height: 32px; }
+.beitrag-text { padding: 26px 28px 30px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.beitrag-text time, .eintrag-text time { font: 700 .8rem/1 var(--anzeige); letter-spacing: .16em; text-transform: uppercase; color: var(--leise); }
+.beitrag-text h3 { font-size: 1.55rem; line-height: 1.08; letter-spacing: -.025em; }
+.beitrag-text p { color: var(--leise); font-size: .98rem; }
+.weiter { margin-top: auto; padding-top: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+.weiter svg { width: 18px; height: 18px; transition: transform .35s var(--feder); }
+.beitrag:hover .weiter svg { transform: translateX(6px); }
+
+/* ── Termin ─────────────────────────────────────────────────── */
+.termin {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(24px, 4vw, 56px); align-items: center;
+  margin-top: 48px; padding: clamp(28px, 4vw, 52px); border-radius: 36px;
+  background: color-mix(in srgb, var(--blau) 12%, var(--papier)); border: 2px solid color-mix(in srgb, var(--blau) 30%, transparent);
+}
+.kalender {
+  width: clamp(130px, 16vw, 180px); border-radius: 28px; overflow: hidden; background: var(--karte);
+  box-shadow: var(--schatten); text-align: center; rotate: -4deg; transition: rotate .6s var(--feder);
+}
+.termin:hover .kalender { rotate: 3deg; }
+.kalender small { display: block; background: var(--blau); color: #fff; padding: 10px; font: 700 .85rem/1 var(--anzeige); letter-spacing: .18em; text-transform: uppercase; }
+.kalender b { display: block; font: 800 clamp(3.6rem, 7vw, 5rem)/1 var(--anzeige); letter-spacing: -.05em; padding: 14px 0 4px; }
+.kalender span { display: block; padding-bottom: 16px; font-weight: 700; color: var(--leise); }
+.termin h3 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); }
+.termin p { color: var(--leise); margin-top: 12px; max-width: 46ch; }
+.countdown { text-align: center; }
+.countdown b { display: block; font: 800 clamp(3.4rem, 7vw, 5.4rem)/.9 var(--anzeige); letter-spacing: -.05em; color: var(--blau); font-variant-numeric: tabular-nums; }
+.countdown span { font-weight: 700; color: var(--leise); }
+
+/* ── Hilfe ──────────────────────────────────────────────────── */
+.hilfe { background: var(--nacht); color: var(--nacht-text); overflow: hidden; }
+.hilfe .dachzeile { color: var(--nacht-leise); }
+.hilfe .einleitung { color: var(--nacht-leise); }
+.hilfe .einleitung b { color: var(--nacht-text); }
+.hilfe-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 90px); align-items: start; }
+.hilfe .knoepfe { margin-top: 36px; }
+.fragen { display: flex; flex-direction: column; gap: 12px; }
+.fragen h3 { font-size: 1.1rem; font-family: var(--anzeige); letter-spacing: .14em; text-transform: uppercase; color: var(--nacht-leise); margin-bottom: 8px; }
+.frage {
+  border-radius: 22px; background: color-mix(in srgb, var(--nacht-text) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nacht-text) 12%, transparent);
+  overflow: hidden; transition: background-color .3s;
+}
+.frage[open] { background: color-mix(in srgb, var(--nacht-text) 11%, transparent); }
+.frage summary {
+  list-style: none; cursor: pointer; display: flex; gap: 16px; align-items: center; justify-content: space-between;
+  padding: 22px 24px; font: 700 1.1rem/1.3 var(--text);
+}
+.frage summary::-webkit-details-marker { display: none; }
+.frage summary i {
+  flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--c); position: relative;
+  transition: rotate .5s var(--feder), border-radius .4s;
+}
+.frage summary i::before, .frage summary i::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 3px; margin: -1.5px 0 0 -7px;
+  background: var(--auf-farbe); border-radius: 2px;
+}
+.frage summary i::after { rotate: 90deg; transition: rotate .4s var(--weich); }
+.frage[open] summary i { rotate: 180deg; border-radius: 50%; }
+.frage[open] summary i::after { rotate: 0deg; }
+.frage-antwort { padding: 0 24px 24px; color: var(--nacht-leise); }
+.frage-antwort p + p { margin-top: 10px; }
+.hilfe-deko { position: absolute; left: -40px; bottom: -60px; display: flex; gap: 12px; align-items: flex-end; opacity: .1; rotate: 12deg; pointer-events: none; }
+.hilfe-deko i { display: block; width: 40px; border-radius: 99px; background: var(--c); }
+
+/* ── Vorstand ───────────────────────────────────────────────── */
+.vorstand-raster { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; margin-top: 56px; }
+.person {
+  padding: 26px 22px 28px; border-radius: var(--rund); background: var(--karte); box-shadow: var(--schatten);
+  display: flex; flex-direction: column; gap: 6px; position: relative;
+}
+.person-zeichen {
+  width: 84px; height: 84px; border-radius: 26px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; font: 800 2rem/1 var(--anzeige); letter-spacing: -.04em; margin-bottom: 18px;
+  transition: transform .6s var(--feder), border-radius .5s var(--weich);
+}
+.person:hover .person-zeichen { transform: rotate(-8deg) translateY(-4px); border-radius: 50%; }
+.person h3 { font-size: 1.3rem; letter-spacing: -.02em; line-height: 1.1; }
+.person p { color: var(--leise); font-size: .95rem; line-height: 1.4; }
+.neu {
+  position: absolute; right: 16px; top: 16px; padding: 6px 12px; border-radius: 99px;
+  background: var(--gruen); color: var(--auf-farbe); font: 800 .75rem/1 var(--anzeige); letter-spacing: .1em; text-transform: uppercase;
+  animation: wackeln 2.6s ease-in-out infinite;
+}
+@keyframes wackeln { 0%, 70%, 100% { rotate: 0deg; } 76% { rotate: -8deg; } 84% { rotate: 7deg; } 92% { rotate: -3deg; } }
+.vertretung-hinweis {
+  margin-top: 28px; padding: 24px 28px; border-radius: 24px; background: var(--sanft);
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+}
+.vertretung-hinweis p { color: var(--leise); flex: 1 1 30ch; min-width: 0; }
+.vertretung-hinweis b { color: var(--tinte); }
+
+/* ── Kontakt ────────────────────────────────────────────────── */
+.kontakt { background: var(--sanft); }
+.post {
+  display: block; margin-top: 30px; text-decoration: none; overflow-wrap: anywhere;
+  font: 800 clamp(1.7rem, 5.6vw, 4.6rem)/1 var(--anzeige); letter-spacing: -.045em;
+  background: linear-gradient(90deg, var(--rot), var(--orange), var(--gelb), var(--gruen), var(--hellblau), var(--blau), var(--rot)) 0 100% / 200% 6px no-repeat;
+  padding-bottom: 14px; transition: background-position 1.2s var(--weich);
+}
+.post:hover { background-position: 100% 100%; }
+.kontakt-raster { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 44px; }
+.kontakt-karte { padding: 26px 28px; border-radius: 24px; background: var(--karte); }
+.kontakt-karte small { display: block; font: 700 .78rem/1 var(--anzeige); letter-spacing: .18em; text-transform: uppercase; color: var(--leise); margin-bottom: 12px; }
+.kontakt-karte a, .kontakt-karte p { font-weight: 650; font-size: 1.1rem; line-height: 1.45; text-decoration: none; }
+.kopieren {
+  margin-top: 26px; display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
+  padding: 12px 18px; border-radius: 999px; background: var(--karte); color: var(--tinte);
+  font: 700 .95rem/1 var(--text); box-shadow: var(--schatten); transition: transform .4s var(--feder);
+}
+.kopieren:hover { transform: translateY(-2px); }
+.kopieren svg { width: 18px; height: 18px; }
+.kopieren.ok { background: var(--gruen); color: var(--auf-farbe); }
+
+/* ── Fuß ────────────────────────────────────────────────────── */
+.fuss { padding-block: 70px 40px; }
+.fuss-raster { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; }
+.fuss-logo { width: 260px; }
+.fuss-stifte { display: flex; gap: 8px; align-items: flex-end; height: 70px; }
+.fuss-stifte i { display: block; width: 16px; border-radius: 99px; background: var(--c); height: var(--h); transition: height .5s var(--feder); }
+.fuss-stifte:hover i { height: calc(var(--h) * .5); }
+.fuss-stifte:hover i:nth-child(2n) { height: 100%; }
+.fuss-links { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 28px; font-weight: 650; }
+.fuss-links a { text-decoration: none; }
+.fuss-links a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.fuss-klein { color: var(--leise); font-size: .9rem; margin-top: 16px; }
+
+/* ── Beitragsseiten ─────────────────────────────────────────── */
+/* Kopf, Text und Rechtsseiten teilen sich eine Spalte, damit die linken Kanten fluchten */
+.artikel-kopf, .artikel, .recht { max-width: 760px; margin-inline: auto; }
+.artikel-kopf { padding-block: clamp(48px, 8vw, 100px) 40px; }
+.zurueck { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; color: var(--leise); }
+.zurueck svg { width: 18px; height: 18px; transition: transform .35s var(--feder); }
+.zurueck:hover svg { transform: translateX(-5px); }
+.artikel-kachel {
+  width: 96px; height: 96px; border-radius: 30px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center; margin-top: 36px;
+  animation: kachel-rein 1s var(--feder) both;
+}
+.artikel-kachel svg { width: 42px; height: 42px; }
+@keyframes kachel-rein { from { transform: scale(.4) rotate(-30deg); } }
+.artikel-kopf h1 { font-size: clamp(2.3rem, 5.6vw, 4.4rem); margin-top: 28px; max-width: 20ch; }
+.artikel-meta { margin-top: 22px; color: var(--leise); font-weight: 600; display: flex; gap: 16px; flex-wrap: wrap; }
+.artikel {
+  padding-bottom: 100px;
+  font-size: 1.12rem; line-height: 1.75;
+}
+.artikel > * + * { margin-top: 1.1em; }
+.artikel h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-top: 2em; letter-spacing: -.025em; line-height: 1.1; }
+.artikel h3 { font-size: 1.3rem; margin-top: 1.6em; letter-spacing: -.015em; line-height: 1.2; }
+.artikel ul, .artikel ol { padding-left: 1.3em; }
+.artikel li + li { margin-top: .5em; }
+.artikel li::marker { color: var(--c); font-weight: 800; }
+.artikel a { text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--c); }
+.artikel strong { font-weight: 700; }
+.kasten {
+  padding: 24px 28px; border-radius: 22px; background: color-mix(in srgb, var(--c) 14%, var(--papier));
+  border: 2px solid color-mix(in srgb, var(--c) 30%, transparent);
+}
+.kasten > * + * { margin-top: .7em; }
+.artikel-zahlen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.artikel-zahlen div { padding: 20px; border-radius: 20px; background: var(--sanft); }
+.artikel-zahlen b { display: block; font: 800 2.4rem/1 var(--anzeige); letter-spacing: -.04em; color: var(--c); font-variant-numeric: tabular-nums; }
+.artikel-zahlen span { display: block; font-size: .95rem; color: var(--leise); margin-top: 6px; line-height: 1.35; }
+.lesefortschritt { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; z-index: 40; transform-origin: 0 50%; transform: scaleX(var(--fortschritt, 0)); background: var(--c); }
+.weitere { border-top: 2px solid var(--linie); padding-block: 70px; }
+.weitere h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); }
+.weitere .beitraege { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 32px; }
+
+/* ── Alle Beiträge ──────────────────────────────────────────── */
+.archiv-kopf { padding-block: clamp(48px, 8vw, 100px) clamp(40px, 6vw, 70px); }
+.archiv-kopf .dachzeile { display: flex; margin-top: 40px; }
+.archiv { padding-bottom: clamp(80px, 10vw, 130px); }
+.archiv-jahr {
+  display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: clamp(24px, 5vw, 70px);
+  border-top: 2px solid var(--linie); padding-top: 36px;
+}
+.archiv-jahr + .archiv-jahr { margin-top: 80px; }
+.archiv-marke h2 { font-size: clamp(3.2rem, 7vw, 5.6rem); letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.archiv-marke .bogen { width: 120px; border-radius: 99px; margin-top: 14px; }
+.archiv-marke p { margin-top: 14px; color: var(--leise); font-weight: 650; }
+.archiv-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.eintrag {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+  gap: clamp(16px, 3vw, 30px); padding: clamp(18px, 2.4vw, 26px);
+  border-radius: var(--rund); background: var(--karte); box-shadow: var(--schatten);
+  text-decoration: none; overflow: hidden; isolation: isolate;
+  transition: transform .5s var(--weich);
+}
+/* beim Drüberfahren läuft die Farbe des Beitrags von links hinein */
+.eintrag::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: color-mix(in srgb, var(--c) 14%, var(--karte));
+  transform: scaleX(0); transform-origin: 0 50%; transition: transform .6s var(--weich);
+}
+.eintrag:hover { transform: translateX(8px); }
+.eintrag:hover::before { transform: none; }
+.eintrag-kachel {
+  width: 76px; height: 76px; border-radius: 24px; background: var(--c); color: var(--auf-farbe);
+  display: grid; place-items: center;
+  transition: transform .6s var(--feder), border-radius .6s var(--weich);
+}
+.eintrag:hover .eintrag-kachel { transform: rotate(12deg) scale(1.08); border-radius: 50%; }
+.eintrag-kachel svg { width: 34px; height: 34px; }
+.eintrag-text { display: grid; gap: 8px; }
+.eintrag-text h3 { font-size: clamp(1.3rem, 2.4vw, 1.75rem); line-height: 1.1; letter-spacing: -.025em; }
+.eintrag-text p { color: var(--leise); font-size: .98rem; }
+.eintrag-pfeil {
+  width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--linie);
+  display: grid; place-items: center;
+  transition: background-color .3s, border-color .3s, color .3s;
+}
+.eintrag-pfeil svg { width: 20px; height: 20px; transition: transform .4s var(--feder); }
+.eintrag:hover .eintrag-pfeil { background: var(--c); border-color: var(--c); color: var(--auf-farbe); }
+.eintrag:hover .eintrag-pfeil svg { transform: translateX(3px); }
+@media (max-width: 900px) {
+  .archiv-jahr { grid-template-columns: 1fr; gap: 26px; }
+}
+@media (max-width: 560px) {
+  .eintrag { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+  .eintrag-kachel { width: 54px; height: 54px; border-radius: 18px; }
+  .eintrag-kachel svg { width: 26px; height: 26px; }
+  .eintrag-pfeil { display: none; }
+}
+
+.recht { padding-bottom: 100px; }
+.recht h2 { font-size: 1.5rem; margin-top: 2em; letter-spacing: -.02em; }
+.recht p, .recht ul { margin-top: .8em; color: var(--leise); }
+.recht strong { color: var(--tinte); }
+
+.nicht-gefunden { min-height: 70vh; display: grid; place-items: center; text-align: center; padding-block: 60px; }
+.nicht-gefunden .stifte { height: 200px; justify-content: center; margin-bottom: 30px; }
+.nicht-gefunden .stift:nth-child(odd) { animation: stift-auf 1.2s var(--feder) calc(.3s + var(--i) * .09s) forwards, umkippen 3s ease-in-out 1.8s infinite alternate; }
+@keyframes umkippen { to { rotate: 14deg; } }
+
+/* ── Schmale Bildschirme ────────────────────────────────────── */
+@media (max-width: 1060px) {
+  .vorstand-raster { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .drei, .zahlen-raster, .beitraege, .kontakt-raster { grid-template-columns: 1fr; }
+  .einsatz-raster, .partner-raster, .hilfe-raster { grid-template-columns: 1fr; }
+  .kleben { position: static; }
+  .treppe { grid-template-columns: 1fr; }
+  .stufe, .stufe:nth-child(n) { min-height: 0; }
+  .stufe h3 { padding-top: 24px; }
+  .termin { grid-template-columns: auto minmax(0, 1fr); }
+  .countdown { grid-column: 1 / -1; text-align: left; display: flex; align-items: baseline; gap: 12px; }
+  .weitere .beitraege { grid-template-columns: 1fr; }
+  .vorstand-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .termin { grid-template-columns: 1fr; }
+  .thema { grid-template-columns: 1fr; padding: 26px; }
+  .vorstand-raster { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .person { padding: 20px 16px 22px; }
+  .person-zeichen { width: 64px; height: 64px; font-size: 1.6rem; border-radius: 20px; }
+  .artikel-zahlen { grid-template-columns: 1fr; }
+  .bahn-chip span { padding: 9px 12px; }
+}
+
+/* ── Wer keine Bewegung möchte, bekommt keine ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
+  .js .zeigen { opacity: 1; transform: none; }
+  @view-transition { navigation: none; }
+}

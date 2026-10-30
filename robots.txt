@@ -1,0 +1,4 @@
+# Bis die Domain umgezogen ist, sollen Suchmaschinen diese Testadresse nicht aufnehmen.
+# Beim Umzug diese Datei löschen (siehe LIESMICH.md, Schritt 4).
+User-agent: *
+Disallow: /
